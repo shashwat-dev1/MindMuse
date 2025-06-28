@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MindMuse</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 MindMuse: 5-in-1 Creativity Tool</h1>
+    <input id="topicInput" type="text" placeholder="Enter your topic or domain..." />
+    <div class="buttons">
+<button onclick="runAction('generate_ideas')">💡 Generate Ideas</button>
+<button onclick="runAction('find_subtopics')">🧠 Find Subtopics</button>
+<button onclick="runAction('elevator_pitch')">🎙️ Elevator Pitch</button>
+<button onclick="runAction('generate_problems')">⚠️ Real-world Problems</button>
+<button onclick="runAction('recommend_projects')">🚀 Recommend Projects</button>
+
+    </div>
+    <div id="loader" class="loader-wrapper" style="display: none;">
+  <div class="loader"></div>
+</div>
+
+    <pre id="output" class="output-box">Results will appear here...</pre>
+  </div>
+
+  <script>
+    function runAction(action) {
+      const topic = document.getElementById("topicInput").value;
+      const output = document.getElementById("output");
+      output.textContent = "⏳ Loading...";
+
+      fetch("/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, topic })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const formatted = formatMarkdown(data.result);
+        output.innerHTML = formatted;
+      });
+    }
+
+    function formatMarkdown(text) {
+      // Replace **bold**
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Replace bullet points
+      text = text.replace(/- (.*?)(\n|$)/g, '<li>$1</li>');
+      // Wrap lists with <ul> if bullets detected
+      if (text.includes('<li>')) {
+        text = text.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+      }
+      // Replace numbered lists
+      text = text.replace(/^(\d+)\.\s+(.*)/gm, '<strong>$1.</strong> $2');
+      return text;
+    }
+
+  </script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
