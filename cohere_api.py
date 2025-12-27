@@ -1,7 +1,7 @@
 # cohere_api.py
 import cohere
 
-co = cohere.Client('z442CDaQs13dge4XZD5jJxwjwlqOEDcYyLFZtwdt')
+co = cohere.Client('Your_API_Key_here')
 
 def generate_ideas(topic):
     response = co.chat(model='command-nightly', message=f"Generate 5 creative project ideas for: {topic}")
